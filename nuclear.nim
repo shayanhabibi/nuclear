@@ -20,7 +20,7 @@ type
 template nuclear*(x: typed): untyped =
   ## This is a short hand for emulating the type declaration of ptrs and refs
   runnableExamples:
-    doAssert nuclear int == Nuclear[int]
+    doAssert $(nuclear int) == $(Nuclear[int])
   Nuclear[x]
 
 template cptr*[T](x: nuclear T): ptr T =
