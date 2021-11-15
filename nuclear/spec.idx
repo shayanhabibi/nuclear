@@ -1,0 +1,19 @@
+volatileLoad	nuclear/spec.html#volatileLoad.t,ptr.T	spec: volatileLoad[T](src: ptr T): T	
+volatileStore	nuclear/spec.html#volatileStore.t,ptr.T,T	spec: volatileStore[T](dest: ptr T; val: T)	
+MemoryOrder	nuclear/spec.html#MemoryOrder	spec: MemoryOrder	
+AtomicInt8	nuclear/spec.html#AtomicInt8	spec: AtomicInt8	
+AtomicInt16	nuclear/spec.html#AtomicInt16	spec: AtomicInt16	
+AtomicInt32	nuclear/spec.html#AtomicInt32	spec: AtomicInt32	
+AtomicInt64	nuclear/spec.html#AtomicInt64	spec: AtomicInt64	
+nonAtomicType	nuclear/spec.html#nonAtomicType.t,typedesc	spec: nonAtomicType(T: typedesc): untyped	
+atomicType	nuclear/spec.html#atomicType.t,typedesc	spec: atomicType(T: typedesc): untyped	
+atomic_load_explicit	nuclear/spec.html#atomic_load_explicit,ptr.A,MemoryOrder	spec: atomic_load_explicit[T, A](location: ptr A; order: MemoryOrder): T	
+atomic_store_explicit	nuclear/spec.html#atomic_store_explicit,ptr.A,T,MemoryOrder	spec: atomic_store_explicit[T, A](location: ptr A; desired: T;\n                            order: MemoryOrder = moSequentiallyConsistent)	
+atomic_exchange_explicit	nuclear/spec.html#atomic_exchange_explicit,ptr.A,T,MemoryOrder	spec: atomic_exchange_explicit[T, A](location: ptr A; desired: T;\n                               order: MemoryOrder = moSequentiallyConsistent): T	
+atomic_compare_exchange_strong_explicit	nuclear/spec.html#atomic_compare_exchange_strong_explicit,ptr.A,ptr.T,T,MemoryOrder,MemoryOrder	spec: atomic_compare_exchange_strong_explicit[T, A](location: ptr A; expected: ptr T;\n    desired: T; success, failure: MemoryOrder): bool	
+atomic_compare_exchange_weak_explicit	nuclear/spec.html#atomic_compare_exchange_weak_explicit,ptr.A,ptr.T,T,MemoryOrder,MemoryOrder	spec: atomic_compare_exchange_weak_explicit[T, A](location: ptr A; expected: ptr T;\n    desired: T; success, failure: MemoryOrder): bool	
+atomic_fetch_add_explicit	nuclear/spec.html#atomic_fetch_add_explicit,ptr.A,T,MemoryOrder	spec: atomic_fetch_add_explicit[T, A](location: ptr A; value: T;\n                                order: MemoryOrder = moSequentiallyConsistent): T	
+atomic_fetch_sub_explicit	nuclear/spec.html#atomic_fetch_sub_explicit,ptr.A,T,MemoryOrder	spec: atomic_fetch_sub_explicit[T, A](location: ptr A; value: T;\n                                order: MemoryOrder = moSequentiallyConsistent): T	
+atomic_fetch_and_explicit	nuclear/spec.html#atomic_fetch_and_explicit,ptr.A,T,MemoryOrder	spec: atomic_fetch_and_explicit[T, A](location: ptr A; value: T;\n                                order: MemoryOrder = moSequentiallyConsistent): T	
+atomic_fetch_or_explicit	nuclear/spec.html#atomic_fetch_or_explicit,ptr.A,T,MemoryOrder	spec: atomic_fetch_or_explicit[T, A](location: ptr A; value: T;\n                               order: MemoryOrder = moSequentiallyConsistent): T	
+atomic_fetch_xor_explicit	nuclear/spec.html#atomic_fetch_xor_explicit,ptr.A,T,MemoryOrder	spec: atomic_fetch_xor_explicit[T, A](location: ptr A; value: T;\n                                order: MemoryOrder = moSequentiallyConsistent): T	
