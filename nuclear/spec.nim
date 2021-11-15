@@ -61,16 +61,15 @@ template atomicType*(T: typedesc): untyped =
 proc atomic_load_explicit*[T, A](location: ptr A; order: MemoryOrder): T {.importc.}
 proc atomic_store_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSequentiallyConsistent) {.importc.}
 
-when false: # might use these later
-  proc atomic_exchange_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
-  proc atomic_compare_exchange_strong_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
-  proc atomic_compare_exchange_weak_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
+proc atomic_exchange_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
+proc atomic_compare_exchange_strong_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
+proc atomic_compare_exchange_weak_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
 
-  # Numerical operations
-  proc atomic_fetch_add_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
-  proc atomic_fetch_sub_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
-  proc atomic_fetch_and_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
-  proc atomic_fetch_or_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
-  proc atomic_fetch_xor_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
+# Numerical operations
+proc atomic_fetch_add_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
+proc atomic_fetch_sub_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
+proc atomic_fetch_and_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
+proc atomic_fetch_or_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
+proc atomic_fetch_xor_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSequentiallyConsistent): T {.importc.}
 
 {.pop.}
