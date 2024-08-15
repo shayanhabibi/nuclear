@@ -28,7 +28,7 @@
 
 import nuclear/spec {.all.}
 
-export hint128
+export hint128, MemoryOrder
 
 proc `$`*(x: hint128): string = $ cast[array[2,uint]](x)
 proc `$`*(x: int128): string {.used.} = $ cast[hint128](x)
