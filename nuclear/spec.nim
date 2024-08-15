@@ -7,6 +7,11 @@ type
 
   DCas* = int128 | hint128
 
+converter toInt128*(x: hint128): int128 = cast[int128](x)
+converter toPtrInt128*(x: ptr hint128): ptr int128 = cast[ptr int128](x)
+
+template toHint128*(x: int128): hint128 = cast[hint128](x)
+template toPtrHint128*(x: ptr int128): ptr hint128 = cast[ptr int128](x)
 
 {.push, header: "<stdatomic.h>".}
 
@@ -46,7 +51,29 @@ template atomicType*(T: typedesc): untyped =
 proc signalFence*(order: MemoryOrder) {.importc: "atomic_signal_fence".}
 proc fence*(order: MemoryOrder) {.importc: "atomic_thread_fence".}
 
-when defined(gcc):
+when defined(clang):
+  proc atomic_load_explicit*[T, A](location: ptr A; order: MemoryOrder): T {.importc.}
+  proc atomic_store_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSeqCst) {.importc.}
+
+  proc atomic_exchange_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_compare_exchange_strong_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
+  proc atomic_compare_exchange_weak_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
+
+  # Numerical operations
+  proc atomic_fetch_add_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_fetch_sub_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_fetch_and_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_fetch_or_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_fetch_xor_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+
+  proc atomic_add_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_sub_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_and_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_or_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  proc atomic_xor_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
+  {.pop.}
+
+elif defined(gcc):
   # Because GCC will not use the built-in atomic operations
   # for 128 bit integers, we must use the __sync functions
   # when performing 'atomic' operations on 128 bit integers.
@@ -76,22 +103,22 @@ when defined(gcc):
 
   {.pop.}
 
-  proc syncAddAndFetch*[T](p: ptr T; v: T): T {.importc: "__sync_add_and_fetch", nodecl.}
-  proc syncSubAndFetch*[T](p: ptr T; v: T): T {.importc: "__sync_sub_and_fetch", nodecl.}
-  proc syncOrAndFetch*[T](p: ptr T; v: T): T {.importc: "__sync_or_and_fetch", nodecl.}
-  proc syncAndAndFetch*[T](p: ptr T; v: T): T {.importc: "__sync_and_and_fetch", nodecl.}
-  proc syncXorAndFetch*[T](p: ptr T; v: T): T {.importc: "__sync_xor_and_fetch", nodecl.}
-  proc syncNandAndFetch*[T](p: ptr T; v: T): T {.importc: "__sync_nand_and_fetch", nodecl.}
+  proc syncAddAndFetch*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_add_and_fetch", nodecl.}
+  proc syncSubAndFetch*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_sub_and_fetch", nodecl.}
+  proc syncOrAndFetch*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_or_and_fetch", nodecl.}
+  proc syncAndAndFetch*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_and_and_fetch", nodecl.}
+  proc syncXorAndFetch*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_xor_and_fetch", nodecl.}
+  proc syncNandAndFetch*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_nand_and_fetch", nodecl.}
 
-  proc syncFetchAndAdd*[T](p: ptr T; v: T): T {.importc: "__sync_fetch_and_add", nodecl.}
-  proc syncFetchAndSub*[T](p: ptr T; v: T): T {.importc: "__sync_fetch_and_sub", nodecl.}
-  proc syncFetchAndOr*[T](p: ptr T; v: T): T {.importc: "__sync_fetch_and_or", nodecl.}
-  proc syncFetchAndAnd*[T](p: ptr T; v: T): T {.importc: "__sync_fetch_and_and", nodecl.}
-  proc syncFetchAndXor*[T](p: ptr T; v: T): T {.importc: "__sync_fetch_and_xor", nodecl.}
-  proc syncFetchAndNand*[T](p: ptr T; v: T): T {.importc: "__sync_fetch_and_nand", nodecl.}
+  proc syncFetchAndAdd*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_fetch_and_add", nodecl.}
+  proc syncFetchAndSub*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_fetch_and_sub", nodecl.}
+  proc syncFetchAndOr*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_fetch_and_or", nodecl.}
+  proc syncFetchAndAnd*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_fetch_and_and", nodecl.}
+  proc syncFetchAndXor*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_fetch_and_xor", nodecl.}
+  proc syncFetchAndNand*[T: DCas](p: ptr T; v: T): T {.importc: "__sync_fetch_and_nand", nodecl.}
 
-  proc syncBoolCompareAndSwap*[T](p: ptr T; old, repl: T): bool {.importc: "__sync_bool_compare_and_swap", nodecl.}
-  proc syncValCompareAndSwap*[T](p: ptr T; old, repl: T): T {.importc: "__sync_val_compare_and_swap", nodecl.}
+  proc syncBoolCompareAndSwap*[T: DCas](p: ptr T; old, repl: T): bool {.importc: "__sync_bool_compare_and_swap", nodecl.}
+  proc syncValCompareAndSwap*[T: DCas](p: ptr T; old, repl: T): T {.importc: "__sync_val_compare_and_swap", nodecl.}
 
   proc syncSynchronize*() {.importc: "__sync_synchronize", nodecl.}
 
@@ -110,6 +137,7 @@ when defined(gcc):
       syncCompiler()
     else:
       cast[T](syncFetchAndAdd(toPtrInt128 location, cast[int128](~[0,0])))
+
   proc atomic_store_explicit*[T, A: DCas](location: ptr A; value: sink T; order: static MemoryOrder) {.inline.} =
     syncCompiler()
     moveMem(location, addr value , sizeof(T))
@@ -126,56 +154,46 @@ when defined(gcc):
       syncSynchronize()
     else:
       result = cast[T](location[])
-      while not syncBoolCompareAndSwap(location, result, desired):
+      while not syncBoolCompareAndSwap(toPtrInt128 location, result, desired):
         result = cast[T](location[])
 
   proc atomic_compare_exchange_strong_explicit*[T, A: DCas](
       location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder
     ): bool {.inline.} =
-    syncBoolCompareAndSwap(location, expected[], desired)
+    syncBoolCompareAndSwap(toPtrInt128 location, expected[], desired)
+
   proc atomic_compare_exchange_weak_explicit*[T, A: DCas](
       location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder
     ): bool {.inline.} =
-    syncBoolCompareAndSwap(location, expected[], desired)
+    syncBoolCompareAndSwap(toPtrInt128 location, expected[], desired)
+
   proc atomic_fetch_add_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncFetchAndAdd[T](location, value)
+    cast[T]( syncFetchAndAdd(toPtrInt128 location, toInt128 value) )
+
   proc atomic_fetch_sub_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncFetchAndSub(location, value)
+    cast[T]( syncFetchAndSub(toPtrInt128 location, toInt128 value) )
+
   proc atomic_fetch_and_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncFetchAndAnd(location, value)
+    cast[T]( syncFetchAndAnd(toPtrInt128 location, toInt128 value) )
+
   proc atomic_fetch_or_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncFetchAndOr(location, value)
+    cast[T]( syncFetchAndOr(toPtrInt128 location, toInt128 value) )
+
   proc atomic_fetch_xor_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncFetchAndXor(location, value)
+    cast[T]( syncFetchAndXor(toPtrInt128 location, toInt128 value) )
+
   proc atomic_add_fetch_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncAddAndFetch(location, value)
+    cast[T]( syncAddAndFetch(toPtrInt128 location, toInt128 value) )
+
   proc atomic_sub_fetch_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncSubAndFetch(location, value)
+    cast[T]( syncSubAndFetch(toPtrInt128 location, toInt128 value) )
+
   proc atomic_and_fetch_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncAndAndFetch(location, value)
+    cast[T]( syncAndAndFetch(toPtrInt128 location, toInt128 value) )
+
   proc atomic_or_fetch_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncOrAndFetch(location, value)
+    cast[T]( syncOrAndFetch(toPtrInt128 location, toInt128 value) )
+
   proc atomic_xor_fetch_explicit*[T, A: DCas](location: ptr A; value: T; order: MemoryOrder): T {.inline.} =
-    syncXorAndFetch(location, value)
+    cast[T]( syncXorAndFetch(toPtrInt128 location, toInt128 value) )
 
-elif defined(clang):
-  proc atomic_load_explicit*[T, A](location: ptr A; order: MemoryOrder): T {.importc.}
-  proc atomic_store_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSeqCst) {.importc.}
-
-  proc atomic_exchange_explicit*[T, A](location: ptr A; desired: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_compare_exchange_strong_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
-  proc atomic_compare_exchange_weak_explicit*[T, A](location: ptr A; expected: ptr T; desired: T; success, failure: MemoryOrder): bool {.importc.}
-
-  # Numerical operations
-  proc atomic_fetch_add_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_fetch_sub_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_fetch_and_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_fetch_or_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_fetch_xor_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-
-  proc atomic_add_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_sub_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_and_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_or_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  proc atomic_xor_fetch_explicit*[T, A](location: ptr A; value: T; order: MemoryOrder = moSeqCst): T {.importc.}
-  {.pop.}

@@ -33,12 +33,6 @@ export hint128
 proc `$`*(x: hint128): string = $ cast[array[2,uint]](x)
 proc `$`*(x: int128): string {.used.} = $ cast[hint128](x)
 
-template toInt128*(x: hint128): int128 = cast[int128](x)
-template toPtrInt128*(x: ptr hint128): ptr int128 = cast[ptr int128](x)
-
-template toHint128*(x: int128): hint128 = cast[hint128](x)
-template toPtrHint128*(x: ptr int128): ptr hint128 = cast[ptr int128](x)
-
 template `~`*(x: array[2, uint|int]): hint128 = cast[hint128](x)
 
 type
