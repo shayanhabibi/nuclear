@@ -111,67 +111,67 @@ proc load*[T](
     ): T {.inline.} =
   load(addr p, order)
 
-proc store*[T](
-    p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst
+proc store*[T, A](
+    p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst
     ) {.inline.} =
-  store(addr p, v, order)
+  store(addr p, cast[T](v), order)
 
-proc exchange*[T](
-    p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst
+proc exchange*[T, A](
+    p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst
     ): T {.inline.} =
-  exchange(addr p, v, order)
+  exchange(addr p, cast[T](v), order)
 
-proc compareExchange*[T](
-    p: var Nuclear[T]; expected: var T; desired: T;
+proc compareExchange*[T, A](
+    p: var Nuclear[T]; expected: var A; desired: A;
     success, failure: static MemoryOrder
     ): bool {.inline.} =
-  compareExchange(addr p, addr expected, desired, success, failure)
+  compareExchange(addr p, cast[ptr T](addr expected), cast[T](desired), success, failure)
 
-proc compareExchange*[T](
+proc compareExchange*[T, A](
+    p: var Nuclear[T]; expected: var A; desired: A;
+    order: static MemoryOrder = moSeqCst
+    ): bool {.inline.} =
+  compareExchange(addr p, cast[ptr T](addr expected), cast[T](desired), order)
+
+proc compareExchangeWeak*[T, A](
+    p: var Nuclear[T]; expected: var A; desired: A;
+    success, failure: static MemoryOrder
+    ): bool {.inline.} =
+  compareExchangeWeak(addr p, cast[ptr T](addr expected), cast[T](desired), success, failure)
+
+proc compareExchangeWeak*[T, A](
     p: var Nuclear[T]; expected: var T; desired: T;
     order: static MemoryOrder = moSeqCst
     ): bool {.inline.} =
-  compareExchange(addr p, addr expected, desired, order)
+  compareExchangeWeak(addr p, cast[ptr T](addr expected), cast[T](desired), order)
 
-proc compareExchangeWeak*[T](
-    p: var Nuclear[T]; expected: var T; desired: T;
-    success, failure: static MemoryOrder
-    ): bool {.inline.} =
-  compareExchangeWeak(addr p, addr expected, desired, success, failure)
+proc fetchAdd*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  fetchAdd(addr p, cast[T](v), order)
 
-proc compareExchangeWeak*[T](
-    p: var Nuclear[T]; expected: var T; desired: T;
-    order: static MemoryOrder = moSeqCst
-    ): bool {.inline.} =
-  compareExchangeWeak(addr p, addr expected, desired, order)
+proc fetchSub*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  fetchSub(addr p, cast[T](v), order)
 
-proc fetchAdd*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  fetchAdd(addr p, v, order)
+proc fetchAnd*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  fetchAnd(addr p, cast[T](v), order)
 
-proc fetchSub*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  fetchSub(addr p, v, order)
+proc fetchOr*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  fetchOr(addr p, cast[T](v), order)
 
-proc fetchAnd*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  fetchAnd(addr p, v, order)
+proc fetchXor*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  fetchXor(addr p, cast[T](v), order)
 
-proc fetchOr*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  fetchOr(addr p, v, order)
+proc addFetch*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  addFetch(addr p, cast[T](v), order)
 
-proc fetchXor*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  fetchXor(addr p, v, order)
+proc subFetch*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  subFetch(addr p, cast[T](v), order)
 
-proc addFetch*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  addFetch(addr p, v, order)
+proc andFetch*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  andFetch(addr p, cast[T](v), order)
 
-proc subFetch*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  subFetch(addr p, v, order)
+proc orFetch*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  orFetch(addr p, cast[T](v), order)
 
-proc andFetch*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  andFetch(addr p, v, order)
-
-proc orFetch*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  orFetch(addr p, v, order)
-
-proc xorFetch*[T](p: var Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  xorFetch(addr p, v, order)
+proc xorFetch*[T, A](p: var Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  xorFetch(addr p, cast[T](v), order)
 

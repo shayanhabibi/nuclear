@@ -9,7 +9,7 @@ block load:
   assert nucl.load == 5
 
 block exchange:
-  assert nucl.exchange(7) == 5
+  assert nucl.exchange(7'u) == 5
 
 block compareExchange:
   var expected = 7
@@ -33,7 +33,7 @@ block fetchOr:
   assert nucl.load == 7
 
 block fetchXor:
-  assert nucl.fetchXor(5) == 7
+  assert nucl.fetchXor(5'u) == 7
   assert nucl.load == 2
 
 
