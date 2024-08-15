@@ -56,53 +56,53 @@ template `@`[T](x: ptr Nuclear[T]): untyped =
 proc load*[T](p: ptr Nuclear[T]; order: static MemoryOrder = moSeqCst): T =
   cast[T]( atomic_load_explicit[T](@p, order) )
 
-proc store*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst) {.inline.} =
-  atomic_store_explicit(@p, v, order)
+proc store*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst) {.inline.} =
+  atomic_store_explicit(@p, cast[T](v), order)
 
-proc exchange*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_exchange_explicit[T](@p, v, order) )
+proc exchange*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_exchange_explicit[T](@p, cast[T](v), order) )
 
-proc compareExchange*[T](p: ptr Nuclear[T]; expected: ptr T; desired: T; success, failure: static MemoryOrder): bool {.inline.} =
-  atomic_compare_exchange_strong_explicit(@p, @expected, desired, success, failure)
+proc compareExchange*[T, A, C](p: ptr Nuclear[T]; expected: ptr A; desired: C; success, failure: static MemoryOrder): bool {.inline.} =
+  atomic_compare_exchange_strong_explicit(@p, @expected, cast[trivialType C](desired), success, failure)
 
-proc compareExchange*[T](p: ptr Nuclear[T]; expected: ptr T; desired: T; order: static MemoryOrder = moSeqCst): bool {.inline.} =
+proc compareExchange*[T, A, C](p: ptr Nuclear[T]; expected: ptr A; desired: C; order: static MemoryOrder = moSeqCst): bool {.inline.} =
   compareExchange(p, expected, desired, order, order)
 
-proc compareExchangeWeak*[T](p: ptr Nuclear[T]; expected: ptr T; desired: T; success, failure: static MemoryOrder): bool {.inline.} =
-  atomic_compare_exchange_weak_explicit(@p, @expected, desired, success, failure)
+proc compareExchangeWeak*[T, A, C](p: ptr Nuclear[T]; expected: ptr A; desired: C; success, failure: static MemoryOrder): bool {.inline.} =
+  atomic_compare_exchange_weak_explicit(@p, @expected, cast[trivialType C](desired), success, failure)
 
-proc compareExchangeWeak*[T](p: ptr Nuclear[T]; expected: ptr T; desired: T; order: static MemoryOrder = moSeqCst): bool {.inline.} =
+proc compareExchangeWeak*[T, A, C](p: ptr Nuclear[T]; expected: ptr A; desired: C; order: static MemoryOrder = moSeqCst): bool {.inline.} =
   compareExchangeWeak(p, expected, desired, order, order)
 
-proc fetchAdd*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_fetch_add_explicit[T](@p, v, order) )
+proc fetchAdd*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_fetch_add_explicit[T](@p, cast[T](v), order) )
 
-proc fetchSub*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_fetch_sub_explicit[T](@p, v, order) )
+proc fetchSub*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_fetch_sub_explicit[T](@p, cast[T](v), order) )
 
-proc fetchAnd*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_fetch_and_explicit[T](@p, v, order) )
+proc fetchAnd*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_fetch_and_explicit[T](@p, cast[T](v), order) )
 
-proc fetchOr*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_fetch_or_explicit[T](@p, v, order) )
+proc fetchOr*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_fetch_or_explicit[T](@p, cast[T](v), order) )
 
-proc fetchXor*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_fetch_xor_explicit[T](@p, v, order) )
+proc fetchXor*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_fetch_xor_explicit[T](@p, cast[T](v), order) )
 
-proc addFetch*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_add_fetch_explicit[T](@p, v, order) )
+proc addFetch*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_add_fetch_explicit[T](@p, cast[T](v), order) )
 
-proc subFetch*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_sub_fetch_explicit[T](@p, v, order) )
+proc subFetch*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_sub_fetch_explicit[T](@p, cast[T](v), order) )
 
-proc andFetch*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_and_fetch_explicit[T](@p, v, order) )
+proc andFetch*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_and_fetch_explicit[T](@p, cast[T](v), order) )
 
-proc orFetch*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_or_fetch_explicit[T](@p, v, order) )
+proc orFetch*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_or_fetch_explicit[T](@p, cast[T](v), order) )
 
-proc xorFetch*[T](p: ptr Nuclear[T]; v: T; order: static MemoryOrder = moSeqCst): T {.inline.} =
-  cast[T]( atomic_xor_fetch_explicit[T](@p, v, order) )
+proc xorFetch*[T, A](p: ptr Nuclear[T]; v: A; order: static MemoryOrder = moSeqCst): T {.inline.} =
+  cast[T]( atomic_xor_fetch_explicit[T](@p, cast[T](v), order) )
 
 # ============= VAR PROCS ============= #
 
