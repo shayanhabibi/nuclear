@@ -32,7 +32,6 @@ export hint128, MemoryOrder
 
 proc `$`*(x: hint128): string = $ cast[array[2,uint]](x)
 proc `$`*(x: int128): string {.used.} = $ cast[hint128](x)
-
 template `~`*(x: array[2, uint|int]): hint128 = cast[hint128](x)
 
 type
